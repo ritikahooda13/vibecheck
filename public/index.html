@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b16">
+  <meta name="description" content="Discover your internet personality with VIBECHECK by SINGHX LABS.">
+  <title>VIBECHECK — Discover Your Vibe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">V</span><span>VIBE<span class="accent">CHECK</span></span></a>
+    <div class="top-actions">
+      <button id="langToggle" class="language-btn" type="button">हिन्दी</button>
+      <a class="small-link" href="#about" data-i18n="about">About</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="home" class="hero">
+      <div class="eyebrow"><span class="pulse"></span><span data-i18n="eyebrow">YOUR PERSONALITY, DECODED</span></div>
+      <h1 data-i18n="heroTitle">What's your<br><span class="gradient-text">internet vibe?</span></h1>
+      <p class="hero-copy" data-i18n="heroCopy">A few fun questions. One surprisingly accurate vibe. Find out what energy you bring to the internet.</p>
+      <div class="hero-meta"><span>✦ 8 QUESTIONS</span><span>✦ 2 MINUTES</span><span>✦ JUST FOR FUN</span></div>
+      <button id="startBtn" class="primary-btn" type="button"><span data-i18n="start">Discover my vibe</span><span class="arrow">↗</span></button>
+      <p class="microcopy" data-i18n="microcopy">No sign-up. Just vibes.</p>
+      <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+    </section>
+
+    <section id="quiz" class="quiz-panel hidden">
+      <div class="quiz-head"><span id="questionCounter">QUESTION 01 / 08</span><button id="backBtn" class="text-btn" type="button" data-i18n="back">← Back</button></div>
+      <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+      <h2 id="questionText"></h2>
+      <div id="answers" class="answer-list"></div>
+      <p class="quiz-note" data-i18n="selectNote">Choose the answer that feels most like you.</p>
+    </section>
+
+    <section id="result" class="result-panel hidden">
+      <div class="result-kicker" data-i18n="resultKicker">YOUR VIBE IS IN</div>
+      <div id="resultEmoji" class="result-emoji">⚡</div>
+      <p class="result-label" data-i18n="resultLabel">YOU ARE</p>
+      <h2 id="resultTitle"></h2>
+      <p id="resultDescription" class="result-description"></p>
+      <div class="result-tags"><span>VIBE DECODED</span><span>100% YOU</span></div>
+      <div class="result-actions"><button id="shareBtn" class="primary-btn" type="button"><span data-i18n="share">Share my result</span><span>↗</span></button><button id="retryBtn" class="secondary-btn" type="button" data-i18n="retry">Take it again</button></div>
+      <p id="saveMessage" class="save-message" aria-live="polite"></p>
+    </section>
+
+<section id="play-zone" style="max-width:1000px;margin:80px auto;padding:35px 20px;text-align:center;">
+  <p style="color:#9b83ff;letter-spacing:3px;font-weight:bold;">VIBECHECK ARCADE</p>
+  <h2 style="font-size:clamp(32px,5vw,48px);color:#fff;">Your Fun Zone 🎮</h2>
+  <p style="color:#aab0c5;">Play games. Discover yourself. Share the fun.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;margin-top:35px;">
+    <div style="background:#15182b;border:1px solid #39305e;border-radius:22px;padding:28px;color:white;">
+      <div style="font-size:45px;">🔥</div>
+      <h3>Truth or Dare</h3>
+      <p style="color:#aab0c5;">Ready for a crazy challenge?</p>
+      <button onclick="vcTruthDare()" style="background:linear-gradient(90deg,#655cff,#bd65ed);color:white;border:0;border-radius:12px;padding:13px 22px;cursor:pointer;">Get a Challenge</button>
+      <p id="vc-challenge" style="margin-top:20px;min-height:55px;color:#d8caff;">Your challenge will appear here.</p>
+    </div>
+
+    <div style="background:#15182b;border:1px solid #39305e;border-radius:22px;padding:28px;color:white;">
+      <div style="font-size:45px;">⚡</div>
+      <h3>This or That</h3>
+      <p style="color:#aab0c5;">Choose your vibe!</p>
+      <h3 id="vc-question" style="margin:22px 0;">Coffee or Tea?</h3>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button id="vc-option-a" onclick="vcChoose('a')" style="background:#655cff;color:white;border:0;border-radius:12px;padding:13px 20px;cursor:pointer;">Coffee</button>
+        <button id="vc-option-b" onclick="vcChoose('b')" style="background:#a34fe0;color:white;border:0;border-radius:12px;padding:13px 20px;cursor:pointer;">Tea</button>
+      </div>
+      <p id="vc-choice-result" style="color:#d8caff;margin-top:20px;min-height:25px;"></p>
+      <button onclick="vcNext()" style="background:transparent;color:#b9a5ff;border:1px solid #8068d9;border-radius:10px;padding:10px 18px;cursor:pointer;">Next Question ↗</button>
+    </div>
+  </div>
+</section>
+
+<script>
+const vcChallenges = [
+  "TRUTH: What's your most embarrassing moment?",
+  "DARE: Dance for 30 seconds!",
+  "TRUTH: Who was your first crush?",
+  "DARE: Speak in a funny accent for one minute!",
+  "TRUTH: What's one secret talent you have?",
+  "DARE: Sing your favourite song loudly!",
+  "TRUTH: What's the funniest lie you've told?",
+  "DARE: Make your funniest selfie face!"
+];
+
+function vcTruthDare() {
+  const item = vcChallenges[Math.floor(Math.random() * vcChallenges.length)];
+  document.getElementById("vc-challenge").textContent = item;
+}
+
+const vcQuestions = [
+  ["Coffee", "Tea"],
+  ["Beach", "Mountains"],
+  ["Instagram", "YouTube"],
+  ["Love", "Money"],
+  ["Night Owl", "Early Bird"],
+  ["Pizza", "Burger"],
+  ["Movies", "Series"],
+  ["Call", "Text"]
+];
+
+let vcIndex = 0;
+
+function vcChoose(option) {
+  const choice = vcQuestions[vcIndex][option === "a" ? 0 : 1];
+  document.getElementById("vc-choice-result").textContent =
+    "Your choice: " + choice + " ✨";
+}
+
+function vcNext() {
+  vcIndex = (vcIndex + 1) % vcQuestions.length;
+  document.getElementById("vc-question").textContent =
+    "Choose your vibe!";
+  document.getElementById("vc-option-a").textContent = vcQuestions[vcIndex][0];
+  document.getElementById("vc-option-b").textContent = vcQuestions[vcIndex][1];
+  document.getElementById("vc-choice-result").textContent = "";
+  document.getElementById("vc-question").textContent =
+    vcQuestions[vcIndex][0] + " or " + vcQuestions[vcIndex][1] + "?";
+}
+</script>
+
+<section id="roast-zone" style="max-width:750px;margin:65px auto;padding:35px 22px;text-align:center;background:#12152a;border:1px solid #39305e;border-radius:24px;">
+  <p style="color:#a58aff;letter-spacing:3px;">VIBECHECK EXCLUSIVE</p>
+  <h2 style="color:white;font-size:36px;">🔥 AI Roast Studio</h2>
+  <p style="color:#aab0c5;">Enter your details. Get roasted. No mercy!</p>
+
+  <input id="roast-name" maxlength="25" placeholder="Enter your name"
+    style="width:90%;max-width:400px;padding:15px;margin:15px;border-radius:12px;border:1px solid #555;background:#080b16;color:white;">
+
+  <select id="roast-type"
+    style="width:90%;max-width:430px;padding:15px;border-radius:12px;background:#080b16;color:white;border:1px solid #555;">
+    <option value="lazy">Lazy Legend</option>
+    <option value="drama">Drama Queen / King</option>
+    <option value="overthinker">Overthinker</option>
+    <option value="attitude">Attitude Boss</option>
+    <option value="sleepy">Sleepy Soul</option>
+  </select>
+
+  <br><br>
+  <button onclick="generateRoast()"
+    style="padding:15px 30px;border:0;border-radius:12px;background:linear-gradient(90deg,#655cff,#bd65ed);color:white;font-weight:bold;cursor:pointer;">
+    Roast Me 🔥
+  </button>
+
+  <div id="roast-result" style="margin-top:25px;padding:20px;color:white;line-height:1.8;"></div>
+</section>
+
+<script>
+function generateRoast() {
+  const name = document.getElementById("roast-name").value.trim();
+  const type = document.getElementById("roast-type").value;
+  const result = document.getElementById("roast-result");
+
+  if (!name) {
+    result.textContent = "Pehle apna naam toh batao! 😏";
+    return;
+  }
+
+  const roasts = {
+    lazy: [
+      "Your biggest achievement is postponing your biggest achievement.",
+      "Even your alarm clock has stopped believing in you.",
+      "Your energy-saving mode is permanently ON."
+    ],
+    drama: [
+      "Your life needs background music because every small thing is a season finale.",
+      "You don't create drama. Drama creates a home in your life.",
+      "Netflix should buy the rights to your daily reactions."
+    ],
+    overthinker: [
+      "You think so much that even Google asks you to relax.",
+      "You have already imagined 27 problems that haven't happened.",
+      "Your brain deserves overtime payment."
+    ],
+    attitude: [
+      "Your attitude has premium membership, but your logic is on a free trial.",
+      "You walk like a celebrity, even when nobody knows the movie.",
+      "Confidence: 100%. Explanation: unavailable."
+    ],
+    sleepy: [
+      "You don't wake up. You just temporarily pause sleeping.",
+      "Your pillow knows more about your life than your friends.",
+      "Your dream life is excellent. Too bad you're always asleep."
+    ]
+  };
+
+  const options = roasts[type];
+  const roast = options[Math.floor(Math.random() * options.length)];
+
+  result.textContent = "🔥 " + name + ", " + roast;
+}
+</script>
+
+<section id="flag-scanner" style="max-width:760px;margin:75px auto;padding:32px 22px;text-align:center;background:linear-gradient(145deg,#15152d,#101020);border:1px solid #49335d;border-radius:25px;color:white;">
+  <div style="font-size:48px">🚩</div>
+  <p style="color:#c18cff;letter-spacing:3px;font-weight:bold">VIBECHECK PERSONALITY LAB</p>
+  <h2 style="font-size:36px;margin:10px 0">Red Flag Scanner</h2>
+  <p style="color:#aab0c5">Let's expose your real personality!</p>
+
+  <div style="height:7px;background:#29243d;border-radius:20px;margin:25px 0;overflow:hidden">
+    <div id="flag-progress" style="height:100%;width:0%;background:linear-gradient(90deg,#ff536b,#a45bff);transition:width .3s"></div>
+  </div>
+
+  <p id="flag-count" style="color:#bba4ff">Ready?</p>
+  <h3 id="flag-question" style="min-height:65px;line-height:1.5">Are you ready to discover your red flags?</h3>
+
+  <div id="flag-options" style="display:grid;gap:12px;margin-top:25px">
+    <button onclick="flagStart()" style="padding:16px;border:0;border-radius:13px;background:linear-gradient(90deg,#715bff,#b65eea);color:white;font-weight:bold;cursor:pointer">START SCANNING ⚡</button>
+  </div>
+
+  <div id="flag-result" style="margin-top:25px;line-height:1.7"></div>
+</section>
+
+<script>
+const flagQuiz = [
+  {
+    q:"Your friend replies after 8 hours. What do you do?",
+    a:[["Reply normally",0],["Ignore them for 2 days",2],["Send 15 question marks",3]]
+  },
+  {
+    q:"Someone disagrees with your opinion.",
+    a:[["Listen to them",0],["Start an argument",2],["Block them immediately",3]]
+  },
+  {
+    q:"Your crush uploads a story.",
+    a:[["Watch and move on",0],["Check who commented",2],["Investigate their entire profile",3]]
+  },
+  {
+    q:"You make a mistake in an argument.",
+    a:[["Accept it and apologize",0],["Change the topic",2],["Somehow blame the other person",3]]
+  },
+  {
+    q:"Your best friend makes new friends.",
+    a:[["Be happy for them",0],["Feel a little jealous",1],["Get possessive",3]]
+  }
+];
+
+let flagIndex=0;
+let flagScore=0;
+
+function flagStart(){
+  flagIndex=0;
+  flagScore=0;
+  document.getElementById("flag-result").innerHTML="";
+  flagShow();
+}
+
+function flagShow(){
+  const item=flagQuiz[flagIndex];
+  document.getElementById("flag-count").textContent=
+    "QUESTION "+(flagIndex+1)+" / "+flagQuiz.length;
+  document.getElementById("flag-progress").style.width=
+    ((flagIndex+1)/flagQuiz.length*100)+"%";
+  document.getElementById("flag-question").textContent=item.q;
+
+  const options=document.getElementById("flag-options");
+  options.innerHTML="";
+
+  item.a.forEach(answer=>{
+    const btn=document.createElement("button");
+    btn.textContent=answer[0];
+    btn.style.cssText="padding:16px;border:1px solid #51416c;border-radius:13px;background:#201c36;color:white;cursor:pointer;font-size:15px";
+    btn.onclick=()=>{
+      flagScore+=answer[1];
+      flagIndex++;
+      if(flagIndex<flagQuiz.length) flagShow();
+      else flagFinish();
+    };
+    options.appendChild(btn);
+  });
+}
+
+function flagFinish(){
+  let title,emoji,description;
+
+  if(flagScore<=3){
+    title="GREEN FLAG";
+    emoji="💚";
+    description="Healthy vibes! You seem emotionally mature.";
+  }else if(flagScore<=8){
+    title="YELLOW FLAG";
+    emoji="💛";
+    description="A little dramatic! You have some habits to work on.";
+  }else{
+    title="RED FLAG";
+    emoji="🚩";
+    description="Main character energy with a little chaos!";
+  }
+
+  document.getElementById("flag-question").textContent="YOUR SCAN IS COMPLETE!";
+  document.getElementById("flag-options").innerHTML=
+    '<button onclick="flagStart()" style="padding:13px 22px;background:#755cff;color:white;border:0;border-radius:12px;cursor:pointer">RETAKE TEST ↻</button>';
+
+  document.getElementById("flag-result").innerHTML=
+    '<div style="font-size:52px">'+emoji+'</div>'+
+    '<h2 style="font-size:30px;color:#c4a0ff">'+title+'</h2>'+
+    '<h3>Red Flag Score: '+flagScore+'/15</h3>'+
+    '<p style="color:#c3bdd3">'+description+'</p>'+
+    '<button onclick="flagShare()" style="padding:13px 22px;background:linear-gradient(90deg,#655cff,#bd65ed);color:white;border:0;border-radius:12px;cursor:pointer">SHARE MY RESULT ↗</button>';
+
+  document.getElementById("flag-count").textContent="Personality report generated";
+}
+
+function flagShare(){
+  const title=document.getElementById("flag-result").querySelector("h2").textContent;
+  const score=flagScore;
+  const message="My VibeCheck result is "+title+" 🚩 Score: "+score+"/15. Discover your vibe too!";
+  if(navigator.share){
+    navigator.share({title:"My VibeCheck Result",text:message}).catch(()=>{});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(message).then(()=>alert("Result copied! Share it with friends."));
+  }else{
+    alert(message);
+  }
+}
+</script>
+
+<section id="friendship-battle" style="max-width:850px;margin:75px auto;padding:30px 20px;background:#13152b;border:1px solid #443365;border-radius:24px;color:white;text-align:center;">
+  <p style="color:#bd91ff;letter-spacing:3px;">VIBECHECK DUO MODE</p>
+  <h2 style="font-size:36px;">👯 Friendship Battle</h2>
+  <p style="color:#aab0c5;">How well do you two actually match?</p>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin:25px 0;">
+    <input id="fb-name1" maxlength="25" placeholder="Friend 1 name"
+      style="flex:1;min-width:180px;padding:14px;border-radius:10px;background:#080b16;color:white;border:1px solid #554477;">
+    <input id="fb-name2" maxlength="25" placeholder="Friend 2 name"
+      style="flex:1;min-width:180px;padding:14px;border-radius:10px;background:#080b16;color:white;border:1px solid #554477;">
+  </div>
+
+  <div id="fb-questions" style="text-align:left;"></div>
+
+  <button onclick="fbCalculate()" style="margin-top:25px;padding:15px 28px;border:0;border-radius:12px;background:linear-gradient(90deg,#655cff,#bd65ed);color:white;font-weight:bold;cursor:pointer;">
+    CALCULATE FRIENDSHIP ⚡
+  </button>
+
+  <div id="fb-result" style="margin-top:25px;"></div>
+</section>
+
+<script>
+const fbData = [
+  ["Your ideal weekend?",["Party","Netflix","Adventure"]],
+  ["Favourite food?",["Pizza","Burger","Momos"]],
+  ["Your personality?",["Introvert","Extrovert","Ambivert"]],
+  ["Dream destination?",["Mountains","Beach","Big City"]],
+  ["What matters most?",["Trust","Fun","Loyalty"]]
+];
+
+const fbContainer = document.getElementById("fb-questions");
+
+fbData.forEach((q,i)=>{
+  const row=document.createElement("div");
+  row.style.cssText="margin:18px 0;padding:15px;background:#201d37;border-radius:13px;";
+  row.innerHTML=`
+    <h3>${i+1}. ${q[0]}</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <select id="fb-a-${i}" style="padding:12px;background:#090d1b;color:white;border-radius:9px;">
+        <option value="">Friend 1</option>
+        ${q[1].map(x=>`<option value="${x}">${x}</option>`).join("")}
+      </select>
+      <select id="fb-b-${i}" style="padding:12px;background:#090d1b;color:white;border-radius:9px;">
+        <option value="">Friend 2</option>
+        ${q[1].map(x=>`<option value="${x}">${x}</option>`).join("")}
+      </select>
+    </div>`;
+  fbContainer.appendChild(row);
+});
+
+function fbCalculate(){
+  const n1=document.getElementById("fb-name1").value.trim();
+  const n2=document.getElementById("fb-name2").value.trim();
+  const result=document.getElementById("fb-result");
+
+  if(!n1 || !n2){
+    result.textContent="Enter both friends' names first!";
+    return;
+  }
+
+  let matches=0;
+  for(let i=0;i<fbData.length;i++){
+    const a=document.getElementById("fb-a-"+i).value;
+    const b=document.getElementById("fb-b-"+i).value;
+    if(!a || !b){
+      result.textContent="Please answer all 5 questions for both friends.";
+      return;
+    }
+    if(a===b) matches++;
+  }
+
+  const score=Math.round(matches/fbData.length*100);
+  let verdict=score===100?"Perfect Duo! 💜":
+    score>=60?"Bestie Energy! 🔥":
+    score>=40?"Opposites Attract! ✨":"Different Vibes, Still Friends! 😎";
+
+  result.innerHTML=`
+    <div style="font-size:48px">👯</div>
+    <h2 style="color:#c5a1ff">${score}% MATCH</h2>
+    <h3>${n1} + ${n2}</h3>
+    <p>${verdict}</p>
+    <p style="color:#aaa">You matched on ${matches} out of 5 answers.</p>
+    <button onclick="fbShare()" style="padding:12px 20px;border:0;border-radius:10px;background:#765cff;color:white;cursor:pointer;">SHARE RESULT ↗</button>`;
+}
+
+function fbShare(){
+  const message=document.getElementById("fb-result").innerText;
+  if(navigator.share){
+    navigator.share({title:"VibeCheck Friendship Battle",text:message}).catch(()=>{});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(message).then(()=>alert("Result copied!"));
+  }else{
+    alert(message);
+  }
+}
+</script>
+<section class="section" id="daily-challenge">
+  <div class="section-heading">
+    <span class="eyebrow">🔥 DAILY VIRAL EVENT</span>
+    <h2>Today's Big Debate</h2>
+    <p>Pick your side. See what everyone thinks.</p>
+  </div>
+
+  <div class="challenge-card">
+    <h3 id="dailyQuestion">Loading today's challenge...</h3>
+
+    <div id="dailyOptions" class="challenge-options"></div>
+
+    <div id="dailyResults"></div>
+    <p id="voteMessage"></p>
+  </div>
+</section>
+<section id="trending-leaderboard" class="section">
+  <div class="section-heading">
+    <span class="eyebrow">COMMUNITY RANKINGS</span>
+    <h2>Trending Challenges</h2>
+    <p>Discover the most popular challenges.</p>
+  </div>
+  <div id="leaderboardList" class="challenge-card">
+    Loading leaderboard...
+  </div>
+</section>
+
+<script>
+async function loadLeaderboard() {
+  const box = document.getElementById("leaderboardList");
+
+  try {
+    const response = await fetch("/api/challenge/leaderboard");
+    if (!response.ok) throw new Error("Failed");
+
+    const data = await response.json();
+    box.innerHTML = "";
+
+    data.leaderboard.forEach((item, index) => {
+      const card = document.createElement("div");
+      card.className = "leaderboard-item";
+      card.innerHTML = "";
+
+      const heading = document.createElement("h3");
+      heading.textContent = `#${index + 1} ${item.question}`;
+
+      const votes = document.createElement("p");
+      votes.textContent = `Total Votes: ${item.totalVotes}`;
+
+      card.append(heading, votes);
+      box.appendChild(card);
+    });
+  } catch (error) {
+    box.textContent = "Leaderboard could not load.";
+  }
+}
+
+loadLeaderboard();
+</script>
+<script>
+async function loadDailyChallenge() {
+  const question = document.getElementById("dailyQuestion");
+  const optionsBox = document.getElementById("dailyOptions");
+  const results = document.getElementById("dailyResults");
+
+  try {
+    const response = await fetch("/api/challenge/today");
+    const data = await response.json();
+
+    question.textContent = data.question;
+    optionsBox.innerHTML = "";
+    results.innerHTML = "";
+
+    data.options.forEach(option => {
+      const button = document.createElement("button");
+      button.textContent = option;
+      button.className = "challenge-option";
+      button.onclick = () => voteDailyChallenge(data.id, option);
+      optionsBox.appendChild(button);
+    });
+
+    showChallengeResults(data.options, data.votes);
+  } catch (error) {
+    question.textContent = "Challenge could not load. Try again.";
+  }
+}
+
+function showChallengeResults(options, votes) {
+  const box = document.getElementById("dailyResults");
+  const total = votes.reduce((sum, v) => sum + v.count, 0);
+
+  box.innerHTML = "<h4>Live Vote Results</h4>";
+
+  options.forEach(option => {
+    const count = votes.find(v => v.choice === option)?.count || 0;
+    const percent = total ? Math.round(count / total * 100) : 0;
+
+    const row = document.createElement("p");
+    row.textContent = `${option}: ${percent}% (${count} votes)`;
+    box.appendChild(row);
+  });
+}
+
+async function voteDailyChallenge(challengeId, choice) {
+  const message = document.getElementById("voteMessage");
+
+  try {
+    const response = await fetch("/api/challenge/vote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ challengeId, choice })
+    });
+
+    if (!response.ok) throw new Error("Vote failed");
+
+    message.textContent = "Your vote has been submitted!";
+    loadDailyChallenge();
+    loadLeaderboard();
+  } catch (error) {
+    message.textContent = "Unable to submit vote. Try again.";
+  }
+}
+
+loadDailyChallenge();
+</script>
+<section id="my-vibe-dashboard" class="section">
+  <div class="section-heading">
+    <span class="eyebrow">YOUR PERSONAL SPACE</span>
+    <h2>My Vibe Dashboard</h2>
+    <p>Your personality journey, all in one place.</p>
+  </div>
+
+  <div class="challenge-card">
+    <h3>My Statistics</h3>
+    <div class="dashboard-stats">
+      <div>
+        <h2 id="totalQuizzes">0</h2>
+        <p>Quizzes Taken</p>
+      </div>
+      <div>
+        <h2 id="topVibe">—</h2>
+        <p>Top Personality</p>
+      </div>
+    </div>
+    <h3>My Previous Results</h3>
+    <div id="vibeHistory">No quiz history yet.</div>
+  </div>
+</section>
+
+
+    <section id="about" class="about-section">
+      <div class="about-card"><span class="about-icon">✳</span><div><h3 data-i18n="aboutTitle">A little self-discovery, a lot of fun.</h3><p data-i18n="aboutCopy">VIBECHECK is a playful personality quiz. Your result is for entertainment, not a scientific assessment.</p></div></div>
+    </section>
+  </main>
+
+  <footer><span>© 2026 SINGHX LABS</span><span>IDEAS INTO DIGITAL REALITY</span></footer>
+  <script src="/app.js"></script>
+</body>
+</html>
