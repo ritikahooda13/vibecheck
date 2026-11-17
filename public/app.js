@@ -54,7 +54,6 @@ function saveLocalHistory(resultId) {
     JSON.stringify(history.slice(0, 50))
   );
 }
-saveLocalHistory(lastResult);
 function finish(){const scores=[0,0,0,0];answers.forEach((a)=>scores[a]++);const max=Math.max(...scores);let winner=scores.indexOf(max);if(scores.filter(x=>x===max).length>1)winner=answers[7];const ids=["chaos_creator","quiet_observer","main_character","good_vibes"];lastResult=ids[winner];renderResult(lastResult,true);}
 function renderResult(id,save){const data=outcomes[id],detail=data[lang];$("resultEmoji").textContent=data.emoji;$("resultTitle").textContent=detail[0];$("resultDescription").textContent=detail[1];$("saveMessage").textContent="";show("result")if(save) {
   saveLocalHistory(id);
